@@ -1,0 +1,131 @@
+<?php
+// Database configuration
+$host = "localhost";
+$db_username = "root";
+$db_password = ""; // Update if you have a password
+$dbname = "my_database"; // Your database name
+
+// Create a connection
+$conn = new mysqli($host, $db_username, $db_password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Initialize variables
+$login_error = "";
+$login_success = "";
+
+// Check if the login form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve form data
+    $usernameOrEmail = $_POST['usernameOrEmail'];
+    $password = $_POST['password'];
+
+    // Prepare and execute query to check user credentials
+    $sql = "SELECT * FROM users WHERE username = ? OR email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        // Check plain text password
+        if ($password === $row['password']) {
+            $login_success = "Login successful!";
+            // Redirect or show logged-in content here
+        } else {
+            $login_error = "Invalid password.";
+        }
+    } else {
+        $login_error = "No account found with that username or email.";
+    }
+
+    $stmt->close();
+}
+
+// Close the connection
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            background-color: #222;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            color: #FFD700;
+        }
+        label, input[type="submit"] {
+            color: #FFD700;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            background-color: #333;
+            color: #FFD700;
+        }
+        input[type="submit"] {
+            background-color: #FFD700;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #000;
+            font-weight: bold;
+        }
+        input[type="submit"]:hover {
+            background-color: #FFC700;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Log In</h2>
+
+        <!-- Display error or success message -->
+        <?php if ($login_error): ?>
+            <p style="color: red;"><?php echo $login_error; ?></p>
+        <?php endif; ?>
+        <?php if ($login_success): ?>
+            <p style="color: green;"><?php echo $login_success; ?></p>
+        <?php endif; ?>
+
+        <!-- Login form -->
+        <form action="login.php" method="post">
+            <label for="usernameOrEmail">Username or Email:</label>
+            <input type="text" name="usernameOrEmail" id="usernameOrEmail" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+
+            <input type="submit" value="Log In">
+        </form>
+    </div>
+</body>
+</html>
