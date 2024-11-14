@@ -36,53 +36,37 @@
 </div>
 
 <?php
+include('connect.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-
-  $servername = "localhost";
-  $username = "root"; 
-  $db_password = ""; 
-  $dbname = "my_database"; 
-
-
-  $conn = new mysqli($servername, $username, $db_password, $dbname);
-
-
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
-
 
   $user_username = $_POST['username'];
   $user_email = $_POST['email'];
   $user_password = $_POST['password']; 
   $user_phone = $_POST['phonenumber']; 
 
+  if (!filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
+      echo "<div class='text-danger text-center mt-3'>Invalid email format.</div>";
+      exit();
+  }
 
   $sql = "INSERT INTO users (username, email, password, phonenumber) VALUES (?, ?, ?, ?)";
 
-
   $stmt = $conn->prepare($sql);
-
 
   if ($stmt === false) {
     die('MySQL prepare error: ' . $conn->error);
   }
 
-
   $stmt->bind_param("ssss", $user_username, $user_email, $user_password, $user_phone);
 
-
   if ($stmt->execute()) {
-
     header("Location: logIn.php");
     exit();
   } else {
-
-    echo "<div class='text-danger text-center mt-3'>Error: " . $stmt->error . "</div>";
+    error_log("Error inserting user: " . $stmt->error);
+    echo "<div class='text-danger text-center mt-3'>An error occurred, please try again.</div>";
   }
-
 
   $stmt->close();
   $conn->close();
