@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password']; 
 
-
+    // Prepare the SQL statement
     $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $username, $email, $password);
@@ -22,9 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $register_error = "Error: " . $stmt->error;
     }
 
+    // Close the prepared statement
     $stmt->close();
 }
 
+// Close the database connection
 $conn->close(); 
 ?>
 
