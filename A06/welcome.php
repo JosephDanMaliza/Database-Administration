@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_email = $_SESSION['email']; // Fetch email from session
+$user_email = $_SESSION['email']; 
 echo "Welcome, " . htmlspecialchars($user_email);
 
 $servername = "localhost";
@@ -20,7 +20,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$account_deleted = false; // Flag to track if the account was deleted
+$account_deleted = false; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     $user_password = $_POST['password'];
@@ -34,18 +34,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
         $stmt->bind_result($stored_password);
         $stmt->fetch();
 
-        // Verify the password
         if (password_verify($user_password, $stored_password)) {
-            // Delete the logged-in user's account
             $delete_sql = "DELETE FROM users WHERE email = ?";
             $delete_stmt = $conn->prepare($delete_sql);
 
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
-                    $account_deleted = true; // Set the flag
-                    session_unset(); // Unset session variables
-                    session_destroy(); // Destroy the session
+                    $account_deleted = true; 
+                    session_unset(); 
+                    session_destroy(); 
                 } else {
                     echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
                 }
@@ -60,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     }
 }
 
-$conn->close(); // Close the database connection
+$conn->close(); 
 ?>
 
 <!DOCTYPE html>
