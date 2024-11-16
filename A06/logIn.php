@@ -33,15 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc(); 
 
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['userID']; 
-            $_SESSION['email'] = $user['email']; 
-
-            header("Location: welcome.php");
-            exit(); 
-        } else {
-            $error_message = "Incorrect password."; 
-        }
+        if ($password === $user['password']) {
+          $_SESSION['user_id'] = $user['userID']; 
+          $_SESSION['email'] = $user['email']; 
+          header("Location: welcome.php");
+          exit();
+      } else {
+          $error_message = "Incorrect password.";
+      }      
     } else {
         $error_message = "No account found with that email."; 
     }
