@@ -7,6 +7,10 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 
+if (!$conn) {
+    die('Connection failed: ' . mysqli_connect_error());
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $email = trim($_POST['email']);
   $password = trim($_POST['password']);
@@ -54,6 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       }
   }
 }
+
+
+$conn->close();
+?>
+
 
 
 <!DOCTYPE html>
