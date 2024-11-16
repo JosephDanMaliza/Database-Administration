@@ -6,8 +6,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_email = $_SESSION['email']; // Fetch email from session
-echo "Welcome, " . $user_email;
+$user_email = $_SESSION['email']; 
+echo "Welcome, " . htmlspecialchars($user_email);
 
 $servername = "localhost";
 $username = "root";
@@ -23,33 +23,45 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     $user_password = $_POST['password'];
 
-    // Check if the logged-in user's credentials are correct
-    $sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+    $sql = "SELECT password FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $user_email, $user_password);
-    $stmt->execute();
-    $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        // Delete the logged-in user's account
-        $delete_sql = "DELETE FROM users WHERE email = ? AND password = ?";
-        $delete_stmt = $conn->prepare($delete_sql);
-        $delete_stmt->bind_param("ss", $user_email, $user_password);
+    if ($stmt) {
+        $stmt->bind_param("s", $user_email);
+        $stmt->execute();
+        $stmt->bind_result($stored_password);
+        $stmt->fetch();
 
-        if ($delete_stmt->execute()) {
-            session_destroy();
-            header("Location: login.php");
-            exit();
+        
+        if (password_verify($user_password, $stored_password)) {
+            
+            $delete_sql = "DELETE FROM users WHERE email = ?";
+            $delete_stmt = $conn->prepare($delete_sql);
+
+            if ($delete_stmt) {
+                $delete_stmt->bind_param("s", $user_email);
+                if ($delete_stmt->execute()) {
+                    session_unset(); 
+                    session_destroy(); 
+                    header("Location: login.php");
+                    exit();
+                } else {
+                    echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
+                }
+                $delete_stmt->close();
+            }
         } else {
-            echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
+            echo "<div class='text-danger text-center mt-3'>Invalid credentials. Account not deleted.</div>";
         }
+        $stmt->close();
     } else {
-        echo "<div class='text-danger text-center mt-3'>Incorrect password. Account not deleted.</div>";
+        echo "<div class='text-danger text-center mt-3'>An error occurred. Please try again later.</div>";
     }
-
-    $stmt->close();
 }
+
+$conn->close(); 
 ?>
+
 
 
 <!DOCTYPE html>
