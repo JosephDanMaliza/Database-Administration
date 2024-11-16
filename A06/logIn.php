@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_message = "Invalid email format.";
     } else {
         
-        $sql = "SELECT userId, email, password FROM users WHERE email = ?";
+        $sql = "SELECT userID, email, password FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
@@ -44,21 +44,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 
                 if (password_verify($password, $stored_password)) {
-                    $_SESSION['userId'] = $user['userId']; 
+                    $_SESSION['userID'] = $user['userID']; 
                     header("Location: welcome.php");
                     exit();
                 } else {
                     $error_message = "Invalid email or password.";
+                    error_log("Password mismatch for user: " . $email); 
                 }
             } else {
                 $error_message = "Invalid email or password.";
-                error_log("No user found for email: " . $email);  
+                error_log("No user found for email: " . $email); 
             }
 
             $stmt->close();
         }
     }
 }
+
+$conn->close();
+?>
+
 
 $conn->close();
 ?>
