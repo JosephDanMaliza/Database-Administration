@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<!-- Login Form (HTML) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container mt-5">
@@ -86,6 +86,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </div>
 </div>
-
 </body>
 </html>
