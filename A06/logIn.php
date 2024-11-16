@@ -1,6 +1,9 @@
 <?php
 session_start(); 
 
+// Declare error variable
+$error_message = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $servername = "localhost";
@@ -38,10 +41,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: welcome.php");
             exit(); 
         } else {
-            echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
+            // Set error message for incorrect password
+            $error_message = "Incorrect password.";
         }
     } else {
-        echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
+        // Set error message for no account found
+        $error_message = "No account found with that email.";
     }
 
     $stmt->close();
@@ -63,6 +68,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="card shadow-sm">
     <div class="card-body">
       <h2 class="text-center mb-4">Login</h2>
+      
+      <!-- Display error message if there is one -->
+      <?php if (!empty($error_message)): ?>
+          <div class="alert alert-danger text-center" role="alert">
+              <?php echo $error_message; ?>
+          </div>
+      <?php endif; ?>
+
       <form action="login.php" method="POST">
         <div class="form-group">
           <label for="email">Email:</label>
