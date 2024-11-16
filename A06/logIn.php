@@ -19,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $conn->real_escape_string($_POST['email']);
     $password = $_POST['password'];
 
+    var_dump($email, $password);
+
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
