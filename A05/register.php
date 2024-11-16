@@ -1,5 +1,5 @@
 <?php
-include('connect.php');
+include('connect.php'); // Ensure this file is clean
 
 $register_error = "";
 $register_success = "";
@@ -9,13 +9,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    // Validation for empty fields or invalid email format
+    // Validate input
     if (empty($username) || empty($email) || empty($password)) {
         $register_error = "All fields are required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $register_error = "Invalid email format.";
     } else {
-        // SQL query to insert user into the database
+        // Insert into database
         $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
 
@@ -38,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
