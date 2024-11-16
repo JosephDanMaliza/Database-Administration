@@ -43,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
-                    
                     session_unset(); 
                     session_destroy(); 
                     $account_deleted = true; 
