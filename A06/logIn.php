@@ -19,9 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $conn->real_escape_string($_POST['email']);
     $password = $_POST['password'];
 
-    echo "Email: $email"; 
-    echo "Password: $password"; 
-
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
@@ -35,10 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        var_dump($user); 
-
+        
         if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_id'] = $user['userID'];
             $_SESSION['email'] = $user['email'];
 
             header("Location: welcome.php");
