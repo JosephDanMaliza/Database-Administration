@@ -25,6 +25,7 @@ $account_deleted = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     $user_password = $_POST['password'];
 
+    // Check if user exists and password matches directly (for plain text passwords)
     $sql = "SELECT password FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
@@ -34,22 +35,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
         $stmt->bind_result($stored_password);
         $stmt->fetch();
 
-        echo "<pre>";
-        echo "Stored Password (hashed): " . $stored_password . "<br>";
-        echo "Entered Password: " . $user_password . "<br>";
-        echo "</pre>";
-
-        if (password_verify($user_password, $stored_password)) {
+        // Directly compare the entered password with the stored password (not recommended for security)
+        if ($user_password === $stored_password) {
+            // Proceed to delete the account
             $delete_sql = "DELETE FROM users WHERE email = ?";
             $delete_stmt = $conn->prepare($delete_sql);
 
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
+                    // Success, account deleted
                     session_unset(); 
                     session_destroy(); 
                     $account_deleted = true;
 
+                    // Redirect to login page after account deletion
                     header("Location: login.php");
                     exit();
                 } else {
