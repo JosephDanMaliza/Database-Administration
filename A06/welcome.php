@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-include('connect.php');
-
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -11,6 +9,16 @@ if (!isset($_SESSION['user_id'])) {
 $user_email = $_SESSION['email']; 
 echo "Welcome, " . htmlspecialchars($user_email);
 
+$servername = "localhost";
+$username = "root";
+$db_password = "";
+$dbname = "my_database";
+
+$conn = new mysqli($servername, $username, $db_password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 $account_deleted = false;  
 
@@ -25,7 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
         $stmt->execute();
         $stmt->bind_result($stored_password);
         $stmt->fetch();
- 
+
+        echo "<pre>";
+        echo "Stored Password (hashed): " . $stored_password . "<br>";
+        echo "Entered Password: " . $user_password . "<br>";
+        echo "</pre>";
 
         if (password_verify($user_password, $stored_password)) {
             $delete_sql = "DELETE FROM users WHERE email = ?";
@@ -34,12 +46,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
-                    
                     session_unset(); 
                     session_destroy(); 
                     $account_deleted = true;
 
-                    
                     header("Location: login.php");
                     exit();
                 } else {
@@ -58,8 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
 
 $conn->close(); 
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
