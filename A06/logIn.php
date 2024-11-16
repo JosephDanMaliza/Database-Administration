@@ -11,11 +11,12 @@ if (!$conn) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
-    $password = trim($_POST['password']);  
-
+    $password = trim($_POST['password']);
 
     echo "Entered Email: " . htmlspecialchars($email) . "<br>";
-    echo "Entered Password: " . var_dump($password) . "<br>";  
+    echo "Entered Password (Trimmed): " . htmlspecialchars($password) . "<br>";
+
+    echo "Entered Password Length: " . strlen($password) . "<br>";
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid email format.";
@@ -34,7 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
 
-                echo "Stored Password (from DB): " . var_dump($user['password']) . "<br>";  
+                echo "Stored Password (from DB): " . htmlspecialchars($user['password']) . "<br>";
+                echo "Stored Password Length: " . strlen($user['password']) . "<br>";
+
                 $stored_password = trim($user['password']);
 
                 if ($password === $stored_password) {
