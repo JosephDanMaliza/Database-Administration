@@ -20,6 +20,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$account_deleted = false;  
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     $user_password = $_POST['password'];
 
@@ -41,8 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
                 if ($delete_stmt->execute()) {
                     session_unset(); 
                     session_destroy(); 
-                    header("Location: login.php");
-                    exit();
+                    $account_deleted = true;
                 } else {
                     echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
                 }
@@ -94,7 +95,17 @@ $conn->close();
 </div>
 
 <?php
-if (isset($_GET['section']) && $_GET['section'] == 'account') {
+if ($account_deleted) {
+  echo '
+  <div class="container mt-5">
+      <div class="card shadow-sm">
+          <div class="card-body">
+              <h2 class="text-center mb-4">Account Successfully Deleted</h2>
+              <p class="text-center">Your account has been deleted. You can <a href="register.php">register again</a> if you wish.</p>
+          </div>
+      </div>
+  </div>';
+} else if (isset($_GET['section']) && $_GET['section'] == 'account') {
   echo '
   <div class="container mt-5">
       <div class="card shadow-sm">
@@ -117,7 +128,6 @@ if (isset($_GET['section']) && $_GET['section'] == 'account') {
       </div>
   </div>';
 }
-
 ?>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
