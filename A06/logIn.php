@@ -2,9 +2,16 @@
 session_start();
 include('connect.php');
 
+if (!$conn) {
+    die('Connection failed: ' . mysqli_connect_error());
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
+
+    echo "Email: " . htmlspecialchars($email) . "<br>";
+    echo "Password: " . htmlspecialchars($password) . "<br>";
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid email format.";
@@ -22,6 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
+
+                echo "Stored password (from DB): " . htmlspecialchars($user['password']) . "<br>";
 
                 if ($password === $user['password']) {
                     $_SESSION['user_id'] = $user['id'];
