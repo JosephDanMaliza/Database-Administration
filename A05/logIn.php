@@ -1,29 +1,13 @@
 <?php
-// Database configuration
-$host = "localhost";
-$db_username = "root";
-$db_password = ""; // Update if you have a password
-$dbname = "my_database"; // Your database name
+include('connect.php');
 
-// Create a connection
-$conn = new mysqli($host, $db_username, $db_password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Initialize variables
 $login_error = "";
 $login_success = "";
 
-// Check if the login form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
     $usernameOrEmail = $_POST['usernameOrEmail'];
     $password = $_POST['password'];
 
-    // Prepare and execute query to check user credentials
     $sql = "SELECT * FROM users WHERE username = ? OR email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
@@ -32,10 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        // Check plain text password
+        
         if ($password === $row['password']) {
             $login_success = "Login successful!";
-            // Redirect or show logged-in content here
         } else {
             $login_error = "Invalid password.";
         }
@@ -46,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 
-// Close the connection
 $conn->close();
 ?>
 
@@ -81,7 +63,7 @@ $conn->close();
         label, input[type="submit"] {
             color: #FFD700;
         }
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -108,7 +90,6 @@ $conn->close();
     <div class="login-container">
         <h2>Log In</h2>
 
-        <!-- Display error or success message -->
         <?php if ($login_error): ?>
             <p style="color: red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
@@ -116,7 +97,6 @@ $conn->close();
             <p style="color: green;"><?php echo $login_success; ?></p>
         <?php endif; ?>
 
-        <!-- Login form -->
         <form action="login.php" method="post">
             <label for="usernameOrEmail">Username or Email:</label>
             <input type="text" name="usernameOrEmail" id="usernameOrEmail" required>

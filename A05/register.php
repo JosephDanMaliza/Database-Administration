@@ -1,37 +1,22 @@
 <?php
-// Database configuration
-$host = "localhost";
-$db_username = "root";
-$db_password = ""; // Update if you have a password
-$dbname = "my_database"; // Your database name
+include('connect.php');
 
-// Create a connection
-$conn = new mysqli($host, $db_username, $db_password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Initialize variables
 $register_error = "";
 $register_success = "";
 
-// Check if the registration form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = $_POST['password']; // No hashing
+    $password = $_POST['password']; 
 
-    // Prepare and execute query to insert new user
+
     $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $username, $email, $password);
 
     if ($stmt->execute()) {
         $register_success = "Registration successful! You can now log in.";
-        header("Location: login.php"); // Redirect to login page after successful registration
+        header("Location: login.php");
         exit();
     } else {
         $register_error = "Error: " . $stmt->error;
@@ -40,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 
-// Close the connection
+
 $conn->close();
 ?>
 
@@ -102,15 +87,13 @@ $conn->close();
     <div class="register-container">
         <h2>Register</h2>
 
-        <!-- Display error or success message -->
-        <?php if ($register_error): ?>
+             <?php if ($register_error): ?>
             <p style="color: red;"><?php echo $register_error; ?></p>
         <?php endif; ?>
         <?php if ($register_success): ?>
             <p style="color: green;"><?php echo $register_success; ?></p>
         <?php endif; ?>
 
-        <!-- Registration form -->
         <form action="register.php" method="post">
             <label for="username">Username:</label>
             <input type="text" name="username" id="username" required>
