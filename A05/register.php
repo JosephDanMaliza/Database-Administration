@@ -1,6 +1,9 @@
 <?php
 include('connect.php');
 
+<?php
+include('connect.php');
+
 $register_error = "";
 $register_success = "";
 
@@ -25,9 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 
-
-$conn->close();
+$conn->close(); 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
