@@ -43,8 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
-                    session_unset(); 
-                    session_destroy(); 
+                    echo "<div class='text-success text-center mt-3'>Account successfully deleted.</div>";
+
                     $account_deleted = true; 
 
                     header("Location: welcome.php?account_deleted=true");
