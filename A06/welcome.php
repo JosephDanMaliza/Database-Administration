@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 echo "Welcome, " . $_SESSION['email']; 
 
+
 $servername = "localhost";
 $username = "root";
 $db_password = "";
