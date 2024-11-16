@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       if ($password === $user['password']) {
           session_start();
-          $_SESSION['user_id'] = $user['id'];  // assuming 'id' is a unique identifier for users
+          $_SESSION['user_id'] = $user['id'];  
           header("Location: welcome.php");
           exit();
       } else {
@@ -63,7 +63,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $stmt->close();
 }
 
-$conn->close();
+if (isset($conn) && $conn instanceof mysqli) {
+  $conn->close();
+}
+
 ?>
 
 </body>
