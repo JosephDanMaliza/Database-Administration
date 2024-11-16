@@ -2,6 +2,7 @@
 session_start();
 include('connect.php');
 
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -14,12 +15,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-  
+    
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid email format.";
     } else {
         
-        $sql = "SELECT id, email, password FROM users WHERE email = ?";
+        $sql = "SELECT userId, email, password FROM users WHERE email = ?";  
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
@@ -37,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 
                 if (password_verify($password, $stored_password)) {
-                    $_SESSION['user_id'] = $user['id']; 
+                    $_SESSION['userId'] = $user['userId']; 
                     header("Location: welcome.php");
                     exit();
                 } else {
