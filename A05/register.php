@@ -1,9 +1,6 @@
 <?php
 include('connect.php');
 
-<?php
-include('connect.php');
-
 $register_error = "";
 $register_success = "";
 
