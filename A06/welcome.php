@@ -43,11 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
             if ($delete_stmt) {
                 $delete_stmt->bind_param("s", $user_email);
                 if ($delete_stmt->execute()) {
+                    
                     session_unset(); 
                     session_destroy(); 
-                    $account_deleted = true;
+                    $account_deleted = true; 
 
-                    header("Location: login.php");
+                    header("Location: welcome.php?account_deleted=true");
                     exit();
                 } else {
                     echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
@@ -99,7 +100,7 @@ $conn->close();
 </div>
 
 <?php
-if ($account_deleted) {
+if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
   echo '
   <div class="container mt-5">
       <div class="card shadow-sm">
