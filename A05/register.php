@@ -5,30 +5,39 @@ $register_error = "";
 $register_success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password']; 
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-
-    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $username, $email, $password);
-
-    if ($stmt->execute()) {
-        $register_success = "Registration successful! You can now log in.";
-        header("Location: login.php");
-        exit();
+    // Validation for empty fields or invalid email format
+    if (empty($username) || empty($email) || empty($password)) {
+        $register_error = "All fields are required.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $register_error = "Invalid email format.";
     } else {
-        $register_error = "Error: " . $stmt->error;
+        // SQL query to insert user into the database
+        $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("sss", $username, $email, $password);
+
+            if ($stmt->execute()) {
+                $register_success = "Registration successful! Redirecting to login page...";
+                header("refresh:3;url=login.php"); // Redirect after 3 seconds
+                exit();
+            } else {
+                $register_error = "Error: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            $register_error = "Error: " . $conn->error;
+        }
     }
-
-    $stmt->close();
 }
-
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,7 +96,8 @@ $conn->close();
     <div class="register-container">
         <h2>Register</h2>
 
-             <?php if ($register_error): ?>
+        <!-- Display errors or success messages -->
+        <?php if ($register_error): ?>
             <p style="color: red;"><?php echo $register_error; ?></p>
         <?php endif; ?>
         <?php if ($register_success): ?>
