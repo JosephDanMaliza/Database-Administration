@@ -1,3 +1,59 @@
+<?php
+session_start();  
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+  $servername = "localhost";
+  $username = "root";
+  $db_password = "";
+  $dbname = "my_database";
+
+  // Establish the database connection
+  $conn = new mysqli($servername, $username, $db_password, $dbname);
+
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+  // SQL query to fetch the user by email
+  $sql = "SELECT * FROM users WHERE email = ?";
+  $stmt = $conn->prepare($sql);
+
+  if ($stmt === false) {
+      die('MySQL prepare error: ' . $conn->error);
+  }
+
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  $login_error = '';
+
+  // Check if a user was found
+  if ($result->num_rows > 0) {
+      $user = $result->fetch_assoc();
+
+      // Compare the entered password with the stored password
+      if ($password === $user['password']) {
+          $_SESSION['user_id'] = $user['id'];  // Store user ID in session
+          header("Location: welcome.php");  // Redirect to welcome page
+          exit();  // Ensure no further code is executed after redirect
+      } else {
+          $login_error = "Incorrect password.";
+      }
+  } else {
+      $login_error = "No account found with that email.";
+  }
+
+  $stmt->close();
+  $conn->close();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,68 +79,16 @@
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
       </form>
+
+      <?php
+     
+      if (!empty($login_error)) {
+          echo "<div class='text-danger text-center mt-3'>{$login_error}</div>";
+      }
+      ?>
     </div>
   </div>
 </div>
-
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-  $servername = "localhost";
-  $username = "root";
-  $db_password = ""; 
-  $dbname = "my_database"; 
-
-
-  $conn = new mysqli($servername, $username, $db_password, $dbname);
-
-
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-
-  $sql = "SELECT * FROM users WHERE email = ?";
-  $stmt = $conn->prepare($sql);
-
-
-  if ($stmt === false) {
-      die('MySQL prepare error: ' . $conn->error);
-  }
-
-
-  $stmt->bind_param("s", $email);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-
-  if ($result->num_rows > 0) {
-
-      $user = $result->fetch_assoc();
-
-
-      if ($password === $user['password']) {
-
-          header("Location: welcome.php");
-          exit();
-      } else {
-
-          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
-      }
-  } else {
-
-      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
-  }
-
-
-  $stmt->close();
-  $conn->close();
-}
-?>
 
 </body>
 </html>
