@@ -1,4 +1,4 @@
-updated register.php<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -40,7 +40,7 @@ include('connect.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-
+  // Get form data
   $user_username = $_POST['username'];
   $user_email = $_POST['email'];
   $user_password = $_POST['password']; 
@@ -56,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       echo "<div class='text-danger text-center mt-3'>Invalid phone number. Please enter a 10-digit number.</div>";
       exit();
   }
+
 
   $check_email_sql = "SELECT * FROM users WHERE email = ?";
   $stmt = $conn->prepare($check_email_sql);
@@ -78,21 +79,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     die('MySQL prepare error: ' . $conn->error);
   }
 
-
+ 
   $stmt->bind_param("ssss", $user_username, $user_email, $user_password, $user_phone);
 
   if ($stmt->execute()) {
-    header("Location: logIn.php"); // Redirect to login page after successful registration
+    header("Location: logIn.php"); 
     exit();
   } else {
-    error_log("Error inserting user: " . $stmt->error); // Log any errors for debugging purposes
+    error_log("Error inserting user: " . $stmt->error); 
     echo "<div class='text-danger text-center mt-3'>An error occurred, please try again.</div>";
   }
 
-
   $stmt->close();
-  $conn->close();
 }
+
+$conn->close();
 ?>
 
 </body>
