@@ -28,11 +28,11 @@
 </div>
 
 <?php
-include('connect.php');
+include('connect.php');  
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $email = $_POST['email'];
-  $password = $_POST['password'];
+  $email = trim($_POST['email']);
+  $password = trim($_POST['password']);
 
   $sql = "SELECT * FROM users WHERE email = ?";
   $stmt = $conn->prepare($sql);
@@ -48,16 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if ($result->num_rows > 0) {
       $user = $result->fetch_assoc();
 
+      
       if ($password === $user['password']) {
           session_start();
           $_SESSION['user_id'] = $user['id'];  
-          header("Location: welcome.php");
+          header("Location: welcome.php"); 
           exit();
       } else {
-          echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
       }
   } else {
-      echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
   }
 
   $stmt->close();
