@@ -28,7 +28,6 @@
 </div>
 
 <?php
-<<<<<<< HEAD
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   $servername = "localhost";
@@ -36,75 +35,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $db_password = ""; 
   $dbname = "my_database"; 
 
-
+  // Establish connection to the database
   $conn = new mysqli($servername, $username, $db_password, $dbname);
-
 
   if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
   }
 
-
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-
-  $sql = "SELECT * FROM users WHERE email = ?";
-  $stmt = $conn->prepare($sql);
-
-
-=======
-include('connect.php');
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $email = $_POST['email'];
   $password = $_POST['password'];
 
   $sql = "SELECT * FROM users WHERE email = ?";
   $stmt = $conn->prepare($sql);
 
->>>>>>> d728c8dca4e7b76c666ff47001ee24e1be6a226f
   if ($stmt === false) {
       die('MySQL prepare error: ' . $conn->error);
   }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d728c8dca4e7b76c666ff47001ee24e1be6a226f
   $stmt->bind_param("s", $email);
   $stmt->execute();
   $result = $stmt->get_result();
 
-<<<<<<< HEAD
-
-  if ($result->num_rows > 0) {
-
-      $user = $result->fetch_assoc();
-
-
-      if ($password === $user['password']) {
-
-          header("Location: welcome.php");
-          exit();
-      } else {
-
-          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
-      }
-  } else {
-
-      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
-  }
-
-
-  $stmt->close();
-  $conn->close();
-}
-?>
-
-</body>
-</html>
-=======
   if ($result->num_rows > 0) {
       $user = $result->fetch_assoc();
 
@@ -114,18 +65,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           header("Location: welcome.php");
           exit();
       } else {
-          echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
       }
   } else {
-      echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
   }
 
   $stmt->close();
+  $conn->close();
 }
-
-$conn->close();
 ?>
 
 </body>
 </html>
->>>>>>> d728c8dca4e7b76c666ff47001ee24e1be6a226f
