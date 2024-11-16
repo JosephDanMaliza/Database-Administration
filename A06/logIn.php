@@ -1,123 +1,91 @@
-<?php
-session_start();  // Start the session to track the user
-
-include('connect.php');
-
-$login_error = "";
-$login_success = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $usernameOrEmail = $_POST['usernameOrEmail'];
-    $password = $_POST['password'];
-
-    // Prepare SQL query to fetch user by username or email
-    $sql = "SELECT * FROM users WHERE username = ? OR email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-
-        // Check if the password matches
-        if ($password === $row['password']) {
-            // Store user data in session
-            $_SESSION['userID'] = $row['userID'];
-            $_SESSION['username'] = $row['username']; // You can store other details like username
-
-            // Set a success message
-            $login_success = "Login successful!";
-            // Redirect to welcome page
-            header("Location: welcome.php");
-            exit();
-        } else {
-            $login_error = "Invalid password.";
-        }
-    } else {
-        $login_error = "No account found with that username or email.";
-    }
-
-    $stmt->close();
-}
-
-$conn->close();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #FFD700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .login-container {
-            background-color: #222;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            width: 300px;
-            text-align: center;
-        }
-        h2 {
-            color: #FFD700;
-        }
-        label, input[type="submit"] {
-            color: #FFD700;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #FFD700;
-            border-radius: 5px;
-            background-color: #333;
-            color: #FFD700;
-        }
-        input[type="submit"] {
-            background-color: #FFD700;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            color: #000;
-            font-weight: bold;
-        }
-        input[type="submit"]:hover {
-            background-color: #FFC700;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Log In</h2>
-
-        <?php if ($login_error): ?>
-            <p style="color: red;"><?php echo $login_error; ?></p>
-        <?php endif; ?>
-        <?php if ($login_success): ?>
-            <p style="color: green;"><?php echo $login_success; ?></p>
-        <?php endif; ?>
-
-        <form action="login.php" method="post">
-            <label for="usernameOrEmail">Username or Email:</label>
-            <input type="text" name="usernameOrEmail" id="usernameOrEmail" required>
-
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
-
-            <input type="submit" value="Log In">
-        </form>
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="text-center mb-4">Login</h2>
+      <form action="login.php" method="POST">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+      </form>
     </div>
+  </div>
+</div>
+
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+ 
+  $servername = "localhost";
+  $username = "root";
+  $db_password = ""; 
+  $dbname = "my_database"; 
+
+  
+  $conn = new mysqli($servername, $username, $db_password, $dbname);
+
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+
+  
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+
+  $sql = "SELECT * FROM users WHERE email = ?";
+  $stmt = $conn->prepare($sql);
+
+  if ($stmt === false) {
+      die('MySQL prepare error: ' . $conn->error);
+  }
+
+  
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  
+  if ($result->num_rows > 0) {
+      $user = $result->fetch_assoc();
+
+      
+      if ($password === $user['password']) {
+          session_start(); 
+
+          
+          $_SESSION['user_id'] = $user['id'];  
+          $_SESSION['email'] = $user['email']; 
+
+          
+          header("Location: welcome.php");
+          exit(); 
+      } else {
+          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
+      }
+  } else {
+      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
+  }
+
+  $stmt->close();
+  $conn->close();
+}
+?>
+
 </body>
 </html>
