@@ -25,8 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
         $stmt->execute();
         $stmt->bind_result($stored_password);
         $stmt->fetch();
-
-        var_dump($stored_password); 
+ 
 
         if (password_verify($user_password, $stored_password)) {
             $delete_sql = "DELETE FROM users WHERE email = ?";
@@ -59,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
 
 $conn->close(); 
 ?>
+
 
 
 <!DOCTYPE html>
