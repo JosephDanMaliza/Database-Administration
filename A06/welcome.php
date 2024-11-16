@@ -1,9 +1,12 @@
 <?php
-session_start();
+session_start();  
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
+
+include('connect.php');  
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +27,7 @@ if (!isset($_SESSION['user_id'])) {
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="#">Accounts</a>
+        <a class="nav-link" href="#">Account</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Posts</a>

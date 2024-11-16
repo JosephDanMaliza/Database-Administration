@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('connect.php');
+include('connect.php');  
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -10,11 +10,13 @@ if (!isset($_SESSION['user_id'])) {
 $delete_error = "";
 $delete_success = "";
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_id = $_SESSION['user_id']; 
+    $user_id = $_SESSION['user_id'];  
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
+
 
     $sql = "SELECT * FROM users WHERE id = ? AND username = ? AND email = ? AND password = ?";
     $stmt = $conn->prepare($sql);
@@ -22,11 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    
     if ($result->num_rows > 0) {
+        
         $delete_sql = "DELETE FROM users WHERE id = ?";
         $delete_stmt = $conn->prepare($delete_sql);
         $delete_stmt->bind_param("i", $user_id);
 
+       
         if ($delete_stmt->execute()) {
             session_unset();
             session_destroy();
@@ -43,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 
-$conn->close();
+$conn->close(); 
 ?>
 
 <!DOCTYPE html>
@@ -118,7 +123,7 @@ $conn->close();
             <?php if ($delete_error): ?>
                 <p style="color: red;"><?php echo $delete_error; ?></p>
             <?php endif; ?>
-            <form method="POST" action="form.php">
+            <form method="POST" action="deleteAccount.php">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
@@ -128,5 +133,3 @@ $conn->close();
     <?php endif; ?>
 </body>
 </html>
-
-
