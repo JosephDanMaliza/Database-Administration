@@ -19,7 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $conn->real_escape_string($_POST['email']);
     $password = $_POST['password'];
 
-    var_dump($email, $password);
+    echo "Email: $email"; 
+    echo "Password: $password"; 
 
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
@@ -34,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
+        var_dump($user); 
 
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
