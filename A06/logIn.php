@@ -3,8 +3,7 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Debugging: Check if form data is being sent
-    var_dump($_POST); // Remove after debugging
+    var_dump($_POST); 
 
     $servername = "localhost";
     $username = "root";
@@ -47,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
     }
 
-    
     $stmt->close();
     $conn->close();
 }
