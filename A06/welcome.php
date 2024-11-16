@@ -6,14 +6,13 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-echo "Welcome, " . $_SESSION['email']; 
-
+$user_email = $_SESSION['email']; // Fetch email from session
+echo "Welcome, " . $user_email;
 
 $servername = "localhost";
 $username = "root";
 $db_password = "";
 $dbname = "my_database";
-
 
 $conn = new mysqli($servername, $username, $db_password, $dbname);
 
@@ -21,12 +20,10 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
-    $user_email = $_POST['email'];
     $user_password = $_POST['password'];
 
-
+    // Check if the logged-in user's credentials are correct
     $sql = "SELECT * FROM users WHERE email = ? AND password = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $user_email, $user_password);
@@ -34,24 +31,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-
+        // Delete the logged-in user's account
         $delete_sql = "DELETE FROM users WHERE email = ? AND password = ?";
         $delete_stmt = $conn->prepare($delete_sql);
         $delete_stmt->bind_param("ss", $user_email, $user_password);
+
         if ($delete_stmt->execute()) {
-            session_destroy(); 
+            session_destroy();
             header("Location: login.php");
             exit();
         } else {
             echo "<div class='text-danger text-center mt-3'>Error deleting account. Please try again.</div>";
         }
     } else {
-        echo "<div class='text-danger text-center mt-3'>Incorrect email or password. Account not deleted.</div>";
+        echo "<div class='text-danger text-center mt-3'>Incorrect password. Account not deleted.</div>";
     }
 
     $stmt->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,7 +95,7 @@ if (isset($_GET['section']) && $_GET['section'] == 'account') {
                 <form action="welcome.php" method="POST">
                     <div class="form-group">
                         <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email" value="' . htmlspecialchars($user_email) . '" readonly>
                     </div>
                     <div class="form-group">
                         <label for="password">Password:</label>
