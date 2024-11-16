@@ -1,6 +1,5 @@
 <?php
-include('connect.php'); 
-
+include('connect.php');
 
 $login_error = "";
 $login_success = "";
@@ -9,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usernameOrEmail = $_POST['usernameOrEmail'];
     $password = $_POST['password'];
 
-   
     $sql = "SELECT * FROM users WHERE username = ? OR email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
@@ -19,17 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        
-        if (password_verify($password, $row['password'])) {
+        if ($password === $row['password']) {
             $login_success = "Login successful!";
-            
-            session_start();
-            $_SESSION['user_id'] = $row['userID']; 
-            $_SESSION['username'] = $row['username']; 
-            
-            
-            header("Location: dashboard.php");
-            exit(); 
         } else {
             $login_error = "Invalid password.";
         }
