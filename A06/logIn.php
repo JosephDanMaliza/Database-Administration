@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $stmt = $conn->prepare($sql);
 
       if ($stmt === false) {
-          die('MySQL prepare error: ' . $conn->error);  // Check for prepare statement errors
+          die('MySQL prepare error: ' . $conn->error);  
       }
 
       $stmt->bind_param("s", $email);
@@ -38,7 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $stmt->close();  
   }
 }
-
 
 if (isset($conn) && $conn instanceof mysqli) {
     $conn->close();
