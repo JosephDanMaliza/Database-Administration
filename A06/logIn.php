@@ -1,102 +1,123 @@
 <?php
-session_start();
+session_start();  // Start the session to track the user
+
 include('connect.php');
 
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-
-if (!$conn) {
-    die('Connection failed: ' . mysqli_connect_error());
-}
+$login_error = "";
+$login_success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $email = trim($_POST['email']);
-  $password = trim($_POST['password']);
+    $usernameOrEmail = $_POST['usernameOrEmail'];
+    $password = $_POST['password'];
 
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $error_message = "Invalid email format.";
-      error_log("Invalid email format: " . $email);
-  } else {
-      $sql = "SELECT userID, email, password FROM users WHERE email = ?";
-      $stmt = $conn->prepare($sql);
+    // Prepare SQL query to fetch user by username or email
+    $sql = "SELECT * FROM users WHERE username = ? OR email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-      if ($stmt === false) {
-          error_log('MySQL prepare error: ' . $conn->error);
-          $error_message = "An unexpected error occurred. Please try again later.";
-      } else {
-          $stmt->bind_param("s", $email);
-          $stmt->execute();
-          $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
 
-          if ($result->num_rows > 0) {
-              $user = $result->fetch_assoc();
-              error_log("User found: " . print_r($user, true));
+        // Check if the password matches
+        if ($password === $row['password']) {
+            // Store user data in session
+            $_SESSION['userID'] = $row['userID'];
+            $_SESSION['username'] = $row['username']; // You can store other details like username
 
-              $stored_email = $user['email'];
-              $stored_password = $user['password'];
+            // Set a success message
+            $login_success = "Login successful!";
+            // Redirect to welcome page
+            header("Location: welcome.php");
+            exit();
+        } else {
+            $login_error = "Invalid password.";
+        }
+    } else {
+        $login_error = "No account found with that username or email.";
+    }
 
-              error_log("Entered password: " . $password);
-              error_log("Stored password hash: " . $stored_password);
-
-              if (password_verify($password, $stored_password)) {
-                  $_SESSION['userID'] = $user['userID'];
-                  error_log("User authenticated successfully.");
-                  header("Location: welcome.php");
-                  exit();
-              } else {
-                  $error_message = "Invalid email or password.";
-                  error_log("Password mismatch for user: " . $email);
-              }
-          } else {
-              $error_message = "Invalid email or password.";
-              error_log("No user found for email: " . $email);
-          }
-
-          $stmt->close();
-      }
-  }
+    $stmt->close();
 }
-
 
 $conn->close();
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            background-color: #222;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            color: #FFD700;
+        }
+        label, input[type="submit"] {
+            color: #FFD700;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            background-color: #333;
+            color: #FFD700;
+        }
+        input[type="submit"] {
+            background-color: #FFD700;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #000;
+            font-weight: bold;
+        }
+        input[type="submit"]:hover {
+            background-color: #FFC700;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h2 class="text-center mb-4">Login</h2>
-      <form action="login.php" method="POST">
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
-      </form>
-      <?php if (!empty($error_message)): ?>
-        <div class="text-danger text-center mt-3">
-          <?= htmlspecialchars($error_message) ?>
-        </div>
-      <?php endif; ?>
+    <div class="login-container">
+        <h2>Log In</h2>
+
+        <?php if ($login_error): ?>
+            <p style="color: red;"><?php echo $login_error; ?></p>
+        <?php endif; ?>
+        <?php if ($login_success): ?>
+            <p style="color: green;"><?php echo $login_success; ?></p>
+        <?php endif; ?>
+
+        <form action="login.php" method="post">
+            <label for="usernameOrEmail">Username or Email:</label>
+            <input type="text" name="usernameOrEmail" id="usernameOrEmail" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+
+            <input type="submit" value="Log In">
+        </form>
     </div>
-  </div>
-</div>
 </body>
 </html>
