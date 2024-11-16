@@ -33,6 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
+                error_log("User found: " . print_r($user, true)); 
+
                 $stored_email = $user['email'];
                 $stored_password = $user['password'];
 
@@ -50,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } else {
                 $error_message = "Invalid email or password.";
+                error_log("No user found for email: " . $email);  
             }
 
             $stmt->close();
