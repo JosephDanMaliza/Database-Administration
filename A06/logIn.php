@@ -1,11 +1,66 @@
+<?php
+session_start(); 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Debugging: Check if form data is being sent
+    var_dump($_POST); // Remove after debugging
+
+    $servername = "localhost";
+    $username = "root";
+    $db_password = ""; 
+    $dbname = "my_database"; 
+
+    $conn = new mysqli($servername, $username, $db_password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $email = $conn->real_escape_string($_POST['email']);
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        die('MySQL prepare error: ' . $conn->error);
+    }
+
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['email'] = $user['email'];
+
+            header("Location: welcome.php");
+            exit(); 
+        } else {
+            echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
+        }
+    } else {
+        echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
+    }
+
+    
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container mt-5">
@@ -26,66 +81,6 @@
     </div>
   </div>
 </div>
-
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
- 
-  $servername = "localhost";
-  $username = "root";
-  $db_password = ""; 
-  $dbname = "my_database"; 
-
-  
-  $conn = new mysqli($servername, $username, $db_password, $dbname);
-
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-  
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-
-  $sql = "SELECT * FROM users WHERE email = ?";
-  $stmt = $conn->prepare($sql);
-
-  if ($stmt === false) {
-      die('MySQL prepare error: ' . $conn->error);
-  }
-
-  
-  $stmt->bind_param("s", $email);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  
-  if ($result->num_rows > 0) {
-      $user = $result->fetch_assoc();
-
-      
-      if ($password === $user['password']) {
-          session_start(); 
-
-          
-          $_SESSION['user_id'] = $user['id'];  
-          $_SESSION['email'] = $user['email']; 
-
-          
-          header("Location: welcome.php");
-          exit(); 
-      } else {
-          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
-      }
-  } else {
-      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
-  }
-
-  $stmt->close();
-  $conn->close();
-}
-?>
 
 </body>
 </html>
