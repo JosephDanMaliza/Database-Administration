@@ -2,8 +2,10 @@
 session_start();
 include('connect.php');
 
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
 
 if (!$conn) {
     die('Connection failed: ' . mysqli_connect_error());
@@ -13,10 +15,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
+    
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid email format.";
     } else {
-        $sql = "SELECT * FROM users WHERE email = ?";
+        
+        $sql = "SELECT email, password FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
@@ -29,10 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
+                $stored_email = $user['email'];
                 $stored_password = $user['password'];
 
-                if (password_verify($password, $stored_password)) { 
-                    $_SESSION['user_id'] = $user['id'];
+                if (password_verify($password, $stored_password)) {
+                    $_SESSION['user_id'] = $user['id']; 
                     header("Location: welcome.php");
                     exit();
                 } else {
@@ -49,7 +54,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
