@@ -1,3 +1,47 @@
+<?php
+session_start();
+include('connect.php');
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = "Invalid email format.";
+    } else {
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt === false) {
+            error_log('MySQL prepare error: ' . $conn->error);  
+            $error_message = "An unexpected error occurred. Please try again later.";
+        } else {
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+
+                if ($password === $user['password']) {
+                    $_SESSION['user_id'] = $user['id'];
+                    header("Location: welcome.php"); 
+                    exit();
+                } else {
+                    $error_message = "Invalid email or password.";
+                }
+            } else {
+                $error_message = "Invalid email or password.";
+            }
+
+            $stmt->close();
+        }
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,48 +67,14 @@
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
       </form>
+      <?php if (!empty($error_message)): ?>
+        <div class="text-danger text-center mt-3">
+          <?= htmlspecialchars($error_message) ?>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 </div>
-
-<?php
-include('connect.php');
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-  $sql = "SELECT * FROM users WHERE email = ?";
-  $stmt = $conn->prepare($sql);
-
-  if ($stmt === false) {
-      die('MySQL prepare error: ' . $conn->error);
-  }
-
-  $stmt->bind_param("s", $email);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-      $user = $result->fetch_assoc();
-
-      if ($password === $user['password']) {
-          session_start();
-          $_SESSION['user_id'] = $user['id'];  
-          header("Location: welcome.php");
-          exit();
-      } else {
-          echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
-      }
-  } else {
-      echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
-  }
-
-  $stmt->close();
-}
-
-$conn->close();
-?>
 
 </body>
 </html>
