@@ -1,5 +1,5 @@
 <?php
-include('connect.php'); // Ensure this file is clean
+include('connect.php'); 
 
 $register_error = "";
 $register_success = "";
@@ -9,13 +9,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    // Validate input
+  
     if (empty($username) || empty($email) || empty($password)) {
         $register_error = "All fields are required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $register_error = "Invalid email format.";
     } else {
-        // Insert into database
+        
         $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
 
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($stmt->execute()) {
                 $register_success = "Registration successful! Redirecting to login page...";
-                header("refresh:3;url=login.php"); // Redirect after 3 seconds
+                header("refresh:3;url=login.php"); 
                 exit();
             } else {
                 $register_error = "Error: " . $stmt->error;
@@ -97,7 +97,6 @@ $conn->close();
     <div class="register-container">
         <h2>Register</h2>
 
-        <!-- Display errors or success messages -->
         <?php if ($register_error): ?>
             <p style="color: red;"><?php echo $register_error; ?></p>
         <?php endif; ?>
