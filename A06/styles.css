@@ -1,0 +1,35 @@
+body {
+    background: #1a1a1a;
+    color: #e0e0e0; 
+}
+
+.card {
+    background-color: #2e2e2e; 
+    border: none;
+    color: #e0e0e0;
+}
+
+.card h2, .card h1 {
+    color: #ff6666; 
+}
+
+.form-control {
+    background-color: #333333; 
+    color: #e0e0e0;
+    border: 1px solid #555; 
+}
+
+.form-control:focus {
+    background-color: #444444; 
+    border-color: #ff6666; 
+}
+
+.btn-primary {
+    background-color: #ff6666; 
+    border-color: #ff6666;
+}
+
+.btn-primary:hover {
+    background-color: #ff4d4d; 
+    border-color: #ff4d4d;
+}
