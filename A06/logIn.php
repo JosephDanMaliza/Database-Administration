@@ -28,42 +28,62 @@
 </div>
 
 <?php
-include('connect.php');
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+  $servername = "localhost";
+  $username = "root";
+  $db_password = ""; 
+  $dbname = "my_database"; 
+
+
+  $conn = new mysqli($servername, $username, $db_password, $dbname);
+
+
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+
+
   $email = $_POST['email'];
   $password = $_POST['password'];
 
+
   $sql = "SELECT * FROM users WHERE email = ?";
   $stmt = $conn->prepare($sql);
+
 
   if ($stmt === false) {
       die('MySQL prepare error: ' . $conn->error);
   }
 
+
   $stmt->bind_param("s", $email);
   $stmt->execute();
   $result = $stmt->get_result();
 
+
   if ($result->num_rows > 0) {
+
       $user = $result->fetch_assoc();
 
+
       if ($password === $user['password']) {
-          session_start();
-          $_SESSION['user_id'] = $user['id'];  
+
           header("Location: welcome.php");
           exit();
       } else {
-          echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+
+          echo "<div class='text-danger text-center mt-3'>Incorrect password.</div>";
       }
   } else {
-      echo "<div class='text-danger text-center mt-3'>Invalid email or password.</div>";
+
+      echo "<div class='text-danger text-center mt-3'>No account found with that email.</div>";
   }
 
-  $stmt->close();
-}
 
-$conn->close();
+  $stmt->close();
+  $conn->close();
+}
 ?>
 
 </body>
