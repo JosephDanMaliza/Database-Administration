@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_message = "Invalid email format.";
     } else {
         
-        $sql = "SELECT id, email, password FROM users WHERE email = ?";
+        $sql = "SELECT user_id, email, password FROM users WHERE email = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
@@ -37,12 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stored_password = $user['password'];
 
                 
-                echo "Retrieved Email: " . htmlspecialchars($stored_email) . "<br>";
-                echo "Retrieved Password (hashed): " . htmlspecialchars($stored_password) . "<br>";
-
-                
                 if (password_verify($password, $stored_password)) {
-                    $_SESSION['user_id'] = $user['id']; 
+                    $_SESSION['user_id'] = $user['user_id']; 
                     header("Location: welcome.php");
                     exit();
                 } else {
