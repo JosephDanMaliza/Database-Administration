@@ -100,6 +100,9 @@ $conn->close();
       <li class="nav-item">
         <a class="nav-link" href="welcome.php?section=account">Delete Account</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="welcome.php?section=account">Update Account</a>
+      </li>
     </ul>
   </div>
 </nav>
