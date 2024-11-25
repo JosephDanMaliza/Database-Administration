@@ -126,7 +126,7 @@ if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
           </div>
       </div>
   </div>';
-} elseif (isset($_GET['section']) && $_GET['section'] == 'edit') {
+} else if (isset($_GET['section']) && $_GET['section'] == 'account') {
   echo '
   <div class="container mt-5">
       <div class="card shadow-sm">
@@ -151,26 +151,26 @@ if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
 } elseif (isset($_GET['section']) && $_GET['section'] == 'edit') {
   echo '
   <div class="container mt-5">
-     <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="text-center mb-4">Edit your Account</h2>
-            <form action="welcome.php" method="POST">
-                <div class="form-group">
-                    <label for="new_name">Name:</label>
-                    <input type="text" class="form-control" id="new_name" name="new_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="new_email">Email:</label>
-                    <input type="email" class="form-control" id="new_email" name="new_email" value="' . htmlspecialchars($user_email) . '" required>
-                </div>
-                <div class="form-group">
-                    <label for="new_password">Password:</label>
-                    <input type="password" class="form-control" id="new_password" name="new_password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" name="update_account">Update Account</button>
-            </form>
-        </div>
-    </div>
+      <div class="card shadow-sm">
+          <div class="card-body">
+              <h2 class="text-center mb-4">Edit your Account</h2>
+              <form action="welcome.php" method="POST">
+                  <div class="form-group">
+                      <label for="new_name">Name:</label>
+                      <input type="text" class="form-control" id="new_name" name="new_name" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="new_email">Email:</label>
+                      <input type="email" class="form-control" id="new_email" name="new_email" value="' . htmlspecialchars($user_email) . '" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="new_password">Password:</label>
+                      <input type="password" class="form-control" id="new_password" name="new_password" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block" name="update_account">Update Account</button>
+              </form>
+          </div>
+      </div>
   </div>';
 }
 ?>
