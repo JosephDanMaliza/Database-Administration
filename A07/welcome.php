@@ -101,7 +101,7 @@ $conn->close();
         <a class="nav-link" href="welcome.php?section=account">Delete Account</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="welcome.php?section=account">Update Account</a>
+      <a class="nav-link" href="welcome.php?section=account">Update Account</a>
       </li>
     </ul>
   </div>
@@ -116,7 +116,6 @@ $conn->close();
 </div>
 
 <?php
-// Handle different sections for account deletion or edit
 if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
   echo '
   <div class="container mt-5">
@@ -127,7 +126,7 @@ if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
           </div>
       </div>
   </div>';
-} else if (isset($_GET['section']) && $_GET['section'] == 'account') {
+} elseif (isset($_GET['section']) && $_GET['section'] == 'edit') {
   echo '
   <div class="container mt-5">
       <div class="card shadow-sm">
