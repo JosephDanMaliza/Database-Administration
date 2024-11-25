@@ -54,14 +54,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_POST['update_account'])) {
         $new_email = $_POST['new_email'];
-        $new_name = $_POST['new_name'];
+        $new_username = $_POST['new_username'];
         $new_password = $_POST['new_password'];
 
-        $update_sql = "UPDATE users SET email = ?, name = ?, password = ? WHERE email = ?";
+        $update_sql = "UPDATE users SET email = ?, username = ?, password = ? WHERE email = ?";
         $update_stmt = $conn->prepare($update_sql);
 
         if ($update_stmt) {
-            $update_stmt->bind_param("ssss", $new_email, $new_name, $new_password, $user_email);
+            $update_stmt->bind_param("ssss", $new_email, $new_username, $new_password, $user_email);
             if ($update_stmt->execute()) {
                 $_SESSION['email'] = $new_email;
                 echo "<div class='text-success text-center mt-3'>Account successfully updated.</div>";
@@ -153,8 +153,8 @@ if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
             <h2 class="text-center mb-4">Edit your Account</h2>
             <form action="welcome.php" method="POST">
                 <div class="form-group">
-                    <label for="new_name">Name:</label>
-                    <input type="text" class="form-control" id="new_name" name="new_name" required>
+                    <label for="new_username">Username:</label>
+                    <input type="text" class="form-control" id="new_username" name="new_username" required>
                 </div>
                 <div class="form-group">
                     <label for="new_email">Email:</label>
