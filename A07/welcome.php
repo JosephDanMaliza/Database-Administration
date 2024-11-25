@@ -16,7 +16,6 @@ $account_deleted = false;
 $account_updated = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Handle account deletion
     if (isset($_POST['delete_account'])) {
         $user_password = $_POST['password'];
 
@@ -29,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_result($stored_password);
             $stmt->fetch();
 
-            // Plain text password comparison
             if ($user_password === $stored_password) {
                 $stmt->close();
 
@@ -54,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Handle account update
     if (isset($_POST['update_account'])) {
         $new_email = $_POST['new_email'];
         $new_name = $_POST['new_name'];
@@ -101,7 +98,7 @@ $conn->close();
         <a class="nav-link" href="welcome.php?section=account">Delete Account</a>
       </li>
       <li class="nav-item">
-      <a class="nav-link" href="welcome.php?section=account">Update Account</a>
+        <a class="nav-link" href="welcome.php?section=edit">Update Account</a>
       </li>
     </ul>
   </div>
@@ -151,26 +148,26 @@ if (isset($_GET['account_deleted']) && $_GET['account_deleted'] == 'true') {
 } elseif (isset($_GET['section']) && $_GET['section'] == 'edit') {
   echo '
   <div class="container mt-5">
-      <div class="card shadow-sm">
-          <div class="card-body">
-              <h2 class="text-center mb-4">Edit your Account</h2>
-              <form action="welcome.php" method="POST">
-                  <div class="form-group">
-                      <label for="new_name">Name:</label>
-                      <input type="text" class="form-control" id="new_name" name="new_name" required>
-                  </div>
-                  <div class="form-group">
-                      <label for="new_email">Email:</label>
-                      <input type="email" class="form-control" id="new_email" name="new_email" value="' . htmlspecialchars($user_email) . '" required>
-                  </div>
-                  <div class="form-group">
-                      <label for="new_password">Password:</label>
-                      <input type="password" class="form-control" id="new_password" name="new_password" required>
-                  </div>
-                  <button type="submit" class="btn btn-primary btn-block" name="update_account">Update Account</button>
-              </form>
-          </div>
-      </div>
+     <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="text-center mb-4">Edit your Account</h2>
+            <form action="welcome.php" method="POST">
+                <div class="form-group">
+                    <label for="new_name">Name:</label>
+                    <input type="text" class="form-control" id="new_name" name="new_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_email">Email:</label>
+                    <input type="email" class="form-control" id="new_email" name="new_email" value="' . htmlspecialchars($user_email) . '" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_password">Password:</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" name="update_account">Update Account</button>
+            </form>
+        </div>
+    </div>
   </div>';
 }
 ?>
